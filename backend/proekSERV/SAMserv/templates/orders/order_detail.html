@@ -1,0 +1,139 @@
+<!--order_detail.html-->
+{% extends 'base.html' %}
+{% load custom_filters %}
+{% block title %}Заказ #{{ order.id }} — {{ order.client.last_name }} {{ order.client.first_name }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">  
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-info text-white">
+                <h4 class="mb-0">
+                    <i class="fas fa-receipt me-2"></i>Заказ №{{ order.id }}
+                    <span class="badge bg-secondary">{{ order.get_status_display }}</span>
+                </h4>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <p><strong>Клиент:</strong> {{ order.client.last_name }} {{ order.client.first_name }}</p>
+                        <p><strong>Телефон:</strong> {{ order.client.phone_number }}</p>
+                        <p><strong>Email:</strong> {{ order.client.email }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Устройство:</strong> {{ order.device.brand }} {{ order.device.model }}</p>
+                        <p><strong>Серийный номер:</strong> {{ order.device.serial_number }}</p>
+                        <p><strong>Диагноз:</strong> {{ order.diagnosis|default:"Не указан" }}</p>
+                    </div>
+                </div>
+
+                <hr>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Мастер:</strong> {{ order.master.last_name }} {{ order.master.first_name }}</p>
+                        <p><strong>Кассир:</strong> {{ order.cashier.last_name }} {{ order.cashier.first_name }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Дата создания:</strong> {{ order.created_date|date:"d.m.Y H:i" }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Услуги -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0"><i class="fas fa-wrench me-2"></i>Услуги</h5>
+            </div>
+            <div class="card-body">
+                {% if services %}
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Наименование</th>
+                                <th>Цена</th>
+                                <th>Кол-во</th>
+                                <th>Итого</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for os in services %}
+                                <tr>
+                                    <td>{{ os.service.service_name }}</td>
+                                    <td>{{ os.service.service_cost }} ₽</td>
+                                    <td>{{ os.quantity }}</td>
+                                    <td>{{ os.service.service_cost|floatformat:2|multiply:os.quantity }} ₽</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <p class="text-muted">Нет услуг</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Запчасти -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-warning text-dark">
+                <h5 class="mb-0"><i class="fas fa-cogs me-2"></i>Запчасти</h5>
+            </div>
+            <div class="card-body">
+                {% if details %}
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Наименование</th>
+                                <th>Цена</th>
+                                <th>Кол-во</th>
+                                <th>Итого</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for od in details %}
+                                <tr>
+                                    <td>{{ od.detail.part_name }}</td>
+                                    <td>{{ od.detail.price }} ₽</td>
+                                    <td>{{ od.quantity }}</td>
+                                    <td>{{ od.detail.price|floatformat:2|multiply:od.quantity }} ₽</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <p class="text-muted">Нет запчастей</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Оплата -->
+        <div class="card shadow-sm">
+            <div class="card-header bg-secondary text-white">
+                <h5 class="mb-0"><i class="fas fa-money-bill-wave me-2"></i>Оплата</h5>
+            </div>
+            <div class="card-body">
+                {% if payment %}
+                    <p><strong>Сумма:</strong> {{ payment.amount }} ₽</p>
+                    <p><strong>Метод:</strong> {{ payment.get_payment_method_display }}</p>
+                    <p><strong>Дата оплаты:</strong> {{ payment.payment_date|date:"d.m.Y H:i" }}</p>
+                {% else %}
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i> Оплата не произведена.
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <a href="{% url 'order-list' %}" class="btn btn-outline-secondary w-100 mb-2">
+                    <i class="fas fa-arrow-left me-2"></i>Назад к списку
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

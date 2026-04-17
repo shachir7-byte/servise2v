@@ -1,0 +1,66 @@
+<!--service_list.html-->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Услуги{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Фоновое изображение -->
+    <div class="position-relative mb-4" style="height: 200px; overflow: hidden; border-radius: 8px;">
+        <img src="{% static 'SAMserv/images/services_bg.jpg' %}"
+             class="w-100 h-100"
+             style="object-fit: cover;"
+             alt="Услуги">
+        <div class="position-absolute top-0 start-0 w-100 h-100 bg-dark bg-opacity-25"></div>
+        <div class="position-absolute bottom-0 start-0 text-white p-3">
+            <h1 class="mb-0">Услуги</h1>
+        </div>
+    </div>
+
+    <!-- Форма поиска и фильтрации -->
+    <form method="get" class="mb-4">
+        <div class="row g-3">
+            <div class="col-md-4">
+                <input type="text" name="q" class="form-control" placeholder="Поиск по названию услуги" value="{{ query }}">
+            </div>
+            <div class="col-md-2">
+                <input type="number" name="min_price" class="form-control" placeholder="Мин. цена" value="{{ min_price }}">
+            </div>
+            <div class="col-md-2">
+                <input type="number" name="max_price" class="form-control" placeholder="Макс. цена" value="{{ max_price }}">
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100">Применить</button>
+            </div>
+        </div>
+    </form>
+
+    <!-- Карточки услуг -->
+    <div class="row">
+        {% for s in services %}
+        <div class="col-md-6 col-lg-4 mb-3">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <div class="bg-secondary rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                        {% if s.service_name == 'Поклейка защитного стекла' %}
+                            <i class="fas fa-shield-alt text-white fs-3"></i>
+                        {% elif s.service_name == 'Ребол аудио кодека' %}
+                            <i class="fas fa-headphones text-white fs-3"></i>
+                        {% else %}
+                            <i class="fas fa-wrench text-white fs-3"></i>
+                        {% endif %}
+                    </div>
+                    <h5 class="card-title text-dark" style="font-weight: 500;">{{ s.service_name }}</h5>
+                    <p class="card-text fs-4 text-dark fw-bold" style="font-weight: 600;">{{ s.service_cost }} ₽</p>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info text-center">Нет услуг в базе данных</div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
